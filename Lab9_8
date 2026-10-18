@@ -1,0 +1,125 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class AngryBirdsGame extends JFrame {
+    private JTextField jtfY = new JTextField("100", 5);
+    private JTextField jtfSpeed = new JTextField("50", 5);
+    private JTextField jtfAngle = new JTextField("30", 5);
+    private JTextField jtfScore = new JTextField("0", 5);
+    private JButton jbtOk = new JButton("OK");
+
+    private GamePanel gamePanel = new GamePanel();
+    private int score = 0;
+
+    public AngryBirdsGame() {
+        jtfScore.setEditable(false);
+
+        JPanel pTop = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        pTop.add(new JLabel("SCENE 1: At Tokyo      SCORE"));
+        pTop.add(jtfScore);
+
+        JPanel pControls = new JPanel(new GridLayout(3, 3, 5, 5));
+        pControls.add(new JLabel("Bird Position in y-axis"));
+        pControls.add(jtfY);
+        pControls.add(new JLabel("m"));
+
+        pControls.add(new JLabel("Shooting speed"));
+        pControls.add(jtfSpeed);
+        pControls.add(new JLabel("m/s"));
+
+        pControls.add(new JLabel("Angle"));
+        pControls.add(jtfAngle);
+        pControls.add(new JLabel("degree"));
+
+        JPanel pSouth = new JPanel(new BorderLayout());
+        pSouth.add(pControls, BorderLayout.CENTER);
+
+        JPanel pBtn = new JPanel(new FlowLayout());
+        pBtn.add(jbtOk);
+        pSouth.add(pBtn, BorderLayout.SOUTH);
+
+        add(pTop, BorderLayout.NORTH);
+        add(gamePanel, BorderLayout.CENTER);
+        add(pSouth, BorderLayout.SOUTH);
+
+        jbtOk.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double sy = -Double.parseDouble(jtfY.getText());
+                    double u = Double.parseDouble(jtfSpeed.getText());
+                    double deg = Double.parseDouble(jtfAngle.getText());
+
+                    double rad = Math.toRadians(deg);
+                    double ux = u * Math.cos(rad);
+                    double uy = u * Math.sin(rad);
+
+                    double g = 10.0;
+                    double a = 0.5 * g;
+                    double b = -uy;
+                    double c = sy;
+
+                    double t = (-b + Math.sqrt(b * b - 4 * a * c)) / (2 * a);
+                    double sx = ux * t;
+
+                    int birdLandingX = (int) sx;
+                    if (Math.abs(birdLandingX - gamePanel.getPigX()) <= 20) {
+                        score += 100;
+                        jtfScore.setText(String.valueOf(score));
+                        gamePanel.randomPig();
+                    }
+                    gamePanel.setLandingX(birdLandingX);
+                    gamePanel.repaint();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Invalid Input");
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        AngryBirdsGame frame = new AngryBirdsGame();
+        frame.setTitle("Angry Birds");
+        frame.setSize(500, 550);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
+
+class GamePanel extends JPanel {
+    private int pigX = 300;
+    private int pigY = 200;
+    private int landingX = -1;
+
+    public GamePanel() {
+        randomPig();
+    }
+
+    public void randomPig() {
+        pigX = 200 + (int)(Math.random() * 200);
+        pigY = 180 + (int)(Math.random() * 50);
+    }
+
+    public int getPigX() { return pigX; }
+    public void setLandingX(int x) { this.landingX = x; }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, getWidth(), getHeight());
+
+        g.setColor(Color.RED);
+        g.fillOval(30, 180, 30, 30);
+
+        g.setColor(Color.GREEN);
+        g.fillOval(pigX, pigY, 30, 30);
+
+        if (landingX != -1) {
+            g.setColor(Color.BLACK);
+            g.drawString("X", landingX, 210);
+        }
+    }
+}
