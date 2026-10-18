@@ -1,0 +1,71 @@
+/*
+g.drawArc(20, 220, 80, 40, 0, 180); : วาดเส้นโค้งครึ่งวงกลมเป็นแท่นฐานสำหรับตั้งเสา
+g.drawLine(...) : วาดเส้นตรงของเสาตั้ง เสาแนวนอน และเชือกที่ยื่นลงมาสำหรับแขวน
+g.drawOval(...) : วาดรูปวงกลมขนาดรัศมี 20 พิกเซล เป็นส่วนศีรษะ
+g.drawLine(...) (ชุดถัดมา): วาดเส้นตรงเชื่อมตำแหน่งมุมเฉียงเป็นแขนซ้าย แขนขวา ลำตัว และขาซ้าย ขาขวา ของตัว Hangman
+*/
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class HangmanGame extends JFrame {
+    public HangmanGame() {
+        HangmanPanel panel = new HangmanPanel();
+        add(panel);
+    }
+
+    public static void main(String[] args) {
+        HangmanGame frame = new HangmanGame();
+        frame.setTitle("Hangman");
+        frame.setSize(300, 350);
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
+
+class HangmanPanel extends JPanel {
+    private int xOffset = 0;
+
+    public HangmanPanel() {
+        setFocusable(true);
+        addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                    xOffset -= 5;
+                    repaint();
+                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                    xOffset += 5;
+                    repaint();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.drawArc(20, 220, 80, 40, 0, 180);
+        g.drawLine(20 + 40, 220, 20 + 40, 20);
+        g.drawLine(20 + 40, 20, 20 + 40 + 100, 20);
+        g.drawLine(20 + 40 + 100, 20, 20 + 40 + 100 + xOffset, 40);
+
+        int headX = 20 + 40 + 100 + xOffset;
+        int radius = 20;
+        g.drawOval(headX - radius, 40, 2 * radius, 2 * radius);
+
+        g.drawLine(headX - (int)(radius * Math.cos(Math.toRadians(45))),
+                   40 + radius + (int)(radius * Math.sin(Math.toRadians(45))),
+                   headX - 60, 40 + radius + 60);
+
+        g.drawLine(headX + (int)(radius * Math.cos(Math.toRadians(45))),
+                   40 + radius + (int)(radius * Math.sin(Math.toRadians(45))),
+                   headX + 60, 40 + radius + 60);
+
+        g.drawLine(headX, 40 + 2 * radius, headX, 40 + radius + 80);
+        g.drawLine(headX, 40 + radius + 80, headX - 40, 40 + radius + 80 + 40);
+        g.drawLine(headX, 40 + radius + 80, headX + 40, 40 + radius + 80 + 40);
+    }
+}
