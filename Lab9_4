@@ -1,0 +1,47 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class DollarConverter extends JFrame {
+    private JTextField jtfUs = new JTextField(10);
+    private JTextField jtfCad = new JTextField(10);
+    private JButton jbtConvert = new JButton("Convert");
+
+    public DollarConverter() {
+        JPanel p1 = new JPanel(new GridLayout(2, 2, 5, 5));
+        p1.add(new JLabel("US Dollars"));
+        p1.add(jtfUs);
+        p1.add(new JLabel("Canadian Dollars"));
+        p1.add(jtfCad);
+
+        JPanel p2 = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        p2.add(jbtConvert);
+
+        add(p1, BorderLayout.CENTER);
+        add(p2, BorderLayout.SOUTH);
+
+        jtfCad.setEditable(false);
+
+        jbtConvert.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    double us = Double.parseDouble(jtfUs.getText());
+                    double cad = us * 1.5;
+                    jtfCad.setText(String.format("%.2f", cad));
+                } catch (NumberFormatException ex) {
+                    jtfCad.setText("Invalid Input");
+                }
+            }
+        });
+    }
+
+    public static void main(String[] args) {
+        DollarConverter frame = new DollarConverter();
+        frame.setTitle("Convert US Dollars to Canadian Dollars");
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
